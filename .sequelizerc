@@ -1,0 +1,9 @@
+const path = require("path");
+
+module.exports = {
+    config: path.resolve("sequelize.config.cjs"),
+    //sequelize commonly uses commonjs syntax. so it is .cjs
+    "models-path": path.resolve("src/models"),
+    "seeders-path": path.resolve("seeders"),
+    "migrations-path": path.resolve("migrations")//our db migration file are inside the migrations foldero
+};//path.resolve: converts relative path to absolute path. It is used to avoid errors when running commands from different directories.
