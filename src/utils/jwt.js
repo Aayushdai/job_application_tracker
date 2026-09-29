@@ -13,8 +13,7 @@ export const generateAccessToken = (user) => {
             expiresIn: env.jwt.expiresIn
         }
     );
-    console.log("Generated token parts:", accessToken.split(".").length);
-    console.log("Generated token length:", accessToken.length);
+    
     return accessToken;
     
 };

@@ -1,14 +1,10 @@
 import FollowUp from "../models/FollowUp.js";
 import Application from "../models/Application.js";
 
-export const createFollowUp = async (
-    userId,
-    applicationId,
-    data
-) => {
+export const createFollowUp = async (userId, data) => {
     const application = await Application.findOne({
         where: {
-            id: applicationId,
+            id: data.applicationId,
             user_id: userId
         }
     });
@@ -17,8 +13,8 @@ export const createFollowUp = async (
         throw new Error("Application not found");
     }
 
-    return await FollowUp.create({
-        application_id: applicationId,
+    const followUp = await FollowUp.create({
+        application_id: data.applicationId,
         title: data.title,
         notes: data.notes,
         due_at: new Date(data.dueAt),
@@ -28,56 +24,40 @@ export const createFollowUp = async (
         updated_at: new Date()
     });
 
+    return followUp;
 };
 
 
-export const getAllFollowUps = async (
-    userId,
-    applicationId
-) => {
-    const application = await Application.findOne({
-        where: {
-            id: applicationId,
-            user_id: userId
-        }
-    });
-
-    if (!application) {
-        throw new Error("Application not found");
-    }
-
-    const followUps = await FollowUp.findAll({
-        where: {
-            application_id: applicationId
-        },
+export const getAllFollowUps = async (userId) => {
+    return await FollowUp.findAll({
+        include: [
+            {
+                model: Application,
+                as: "application",
+                where: {
+                    user_id: userId
+                }
+            }
+        ],
         order: [["due_at", "ASC"]]
     });
-
-    return followUps;
 };
 
 
-export const getFollowUpById = async (
-    userId,
-    applicationId,
-    followUpId
-) => {
-    const application = await Application.findOne({
-        where: {
-            id: applicationId,
-            user_id: userId
-        }
-    });
-
-    if (!application) {
-        throw new Error("Application not found");
-    }
-
+export const getFollowUpById = async (userId, followUpId) => {
     const followUp = await FollowUp.findOne({
         where: {
-            id: followUpId,
-            application_id: applicationId
-        }
+            id: followUpId
+        },
+        include: [
+            {
+                model: Application,
+                as: "application",
+                where: {
+                    user_id: userId
+                }
+            }
+        ]
     });
 
     if (!followUp) {
@@ -90,26 +70,22 @@ export const getFollowUpById = async (
 
 export const updateFollowUp = async (
     userId,
-    applicationId,
     followUpId,
     data
 ) => {
-    const application = await Application.findOne({
-        where: {
-            id: applicationId,
-            user_id: userId
-        }
-    });
-
-    if (!application) {
-        throw new Error("Application not found");
-    }
-
     const followUp = await FollowUp.findOne({
         where: {
-            id: followUpId,
-            application_id: applicationId
-        }
+            id: followUpId
+        },
+        include: [
+            {
+                model: Application,
+                as: "application",
+                where: {
+                    user_id: userId
+                }
+            }
+        ]
     });
 
     if (!followUp) {
@@ -142,6 +118,21 @@ export const updateFollowUp = async (
         }
     }
 
+    if (data.applicationId !== undefined) {
+        const application = await Application.findOne({
+            where: {
+                id: data.applicationId,
+                user_id: userId
+            }
+        });
+
+        if (!application) {
+            throw new Error("Application not found");
+        }
+
+        updates.application_id = data.applicationId;
+    }
+
     updates.updated_at = new Date();
 
     await followUp.update(updates);
@@ -152,25 +143,21 @@ export const updateFollowUp = async (
 
 export const deleteFollowUp = async (
     userId,
-    applicationId,
     followUpId
 ) => {
-    const application = await Application.findOne({
-        where: {
-            id: applicationId,
-            user_id: userId
-        }
-    });
-
-    if (!application) {
-        throw new Error("Application not found");
-    }
-
     const followUp = await FollowUp.findOne({
         where: {
-            id: followUpId,
-            application_id: applicationId
-        }
+            id: followUpId
+        },
+        include: [
+            {
+                model: Application,
+                as: "application",
+                where: {
+                    user_id: userId
+                }
+            }
+        ]
     });
 
     if (!followUp) {

@@ -93,19 +93,24 @@ export const updateDocument = async (userId, documentId, data) => {
     if(data.name !== undefined){
         updates.name = data.name;
     }
-    if(data.application_id !== undefined){
-        if(data.application_id !== null){
-            const application = await Application.findOne({
-                where: {
-                    id: data.application_id,
-                    user_id: userId
-                }});
-            if(!application){
-                throw new Error("Application not found");
+    if (data.application_id !== undefined) {
+    if (data.application_id === null) {
+        updates.application_id = null;
+    } else {
+        const application = await Application.findOne({
+            where: {
+                id: data.application_id,
+                user_id: userId
             }
-            updates.application_id = data.application_id;
+        });
+
+        if (!application) {
+            throw new Error("Application not found");
         }
+
+        updates.application_id = data.application_id;
     }
+}
     updates.updated_at = new Date();
     await document.update(updates);
     return document;

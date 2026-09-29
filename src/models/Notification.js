@@ -11,7 +11,6 @@ const Notification = sequelize.define("Notification", {
   user_id: {
     type: DataTypes.INTEGER,
     allowNull: false
-    
   },
   title: {
     type: DataTypes.STRING,
@@ -48,4 +47,3 @@ const Notification = sequelize.define("Notification", {
   }
 );
 export default Notification;
-

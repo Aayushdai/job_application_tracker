@@ -136,7 +136,7 @@ export const deleteInterview = async ( userId, applicationId, interviewId)=>{
     const application= await Application.findOne({
         where: {
             id: applicationId,
-            user_id: uersId
+            user_id: userId
         }
     });
     if (!application){
